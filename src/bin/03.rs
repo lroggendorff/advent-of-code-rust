@@ -55,7 +55,84 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let mut maybe_do_or_dont = "".to_string();
+    let mut should_mul = true;
+    let mut maybe_mul = "".to_string();
+    let mut comma_seen = false;
+    let mut left_operand = "".to_string();
+    let mut right_operand = "".to_string();
+    let mut sum = 0;
+    for c in input.chars() {
+        println!("{}  {}", c, maybe_do_or_dont);
+        if (maybe_do_or_dont == "" && c == 'd')
+            || (maybe_do_or_dont == "d" && c == 'o')
+            || (maybe_do_or_dont == "do" && c == 'n')
+            || (maybe_do_or_dont == "do" && c == '(')
+            || (maybe_do_or_dont == "do(" && c == ')')
+            || (maybe_do_or_dont == "don" && c == '\'')
+            || (maybe_do_or_dont == "don'" && c == 't')
+            || (maybe_do_or_dont == "don't" && c == '(')
+            || (maybe_do_or_dont == "don't(" && c == ')')
+        {
+            maybe_do_or_dont.push(c);
+            if maybe_do_or_dont == "do()" {
+                should_mul = true;
+                maybe_do_or_dont = "".to_string();
+            }
+            if maybe_do_or_dont == "don't()" {
+                should_mul = false;
+                maybe_do_or_dont = "".to_string();
+            }
+            continue;
+        }
+
+        if c == ')' && left_operand != "" && right_operand != "" {
+            let left = left_operand.parse::<u32>().unwrap();
+            let right = right_operand.parse::<u32>().unwrap();
+
+            if should_mul {
+                sum += left * right;
+            }
+
+            maybe_mul = "".to_string();
+            left_operand = "".to_string();
+            right_operand = "".to_string();
+            comma_seen = false;
+            continue;
+        }
+
+        if (maybe_mul == "" && c == 'm')
+            || (maybe_mul == "m" && c == 'u')
+            || (maybe_mul == "mu" && c == 'l')
+            || (maybe_mul == "mul" && c == '(')
+        {
+            maybe_mul.push(c);
+            continue;
+        }
+
+        if (maybe_mul == "mul" && c != '(') || (maybe_mul == "mul(" && c != ',' && !c.is_numeric())
+        {
+            maybe_mul = "".to_string();
+            left_operand = "".to_string();
+            right_operand = "".to_string();
+            comma_seen = false;
+            continue;
+        }
+
+        if maybe_mul == "mul(" && c == ',' {
+            comma_seen = true;
+            continue;
+        }
+
+        if maybe_mul == "mul(" && c.is_numeric() {
+            if comma_seen {
+                right_operand.push(c);
+            } else {
+                left_operand.push(c);
+            }
+        }
+    }
+    Some(sum)
 }
 
 #[cfg(test)]
@@ -112,7 +189,9 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 2,
+        ));
+        assert_eq!(result, Some(48));
     }
 }
