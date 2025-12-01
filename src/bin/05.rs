@@ -14,15 +14,15 @@ pub fn part_one(input: &str) -> Option<u32> {
     println!("{:?}", rules);
     let updates = parts[1].lines();
     let middle_pages = 0;
-    for update in updates {
-        let pages: Vec<&str> = update.split(",").collect();
-        for page in pages {
-            match rules.get(page) {
-                Some(&rule) => println!("{}", rule),
-                _ => println!("nope"),
-            }
-        }
-    }
+    // for update in updates {
+    //     let pages: Vec<&str> = update.split(",").collect();
+    //     for page in pages {
+    //         match rules.get(page) {
+    //             Some(&rule) => println!("{}", rule),
+    //             _ => println!("nope"),
+    //         }
+    //     }
+    // }
     Some(0)
 }
 
